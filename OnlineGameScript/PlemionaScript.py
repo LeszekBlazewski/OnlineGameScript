@@ -1,4 +1,4 @@
-#!/usr/bin/python3.6
+#!/usr/bin/env python3
 """
     File name: PlemionaScript.py
     Author: Leszek Błażewski
@@ -13,30 +13,30 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
-import itertools
-
-# Set headless view
-options = Options()
-options.set_headless(headless=True)
+import time
 
 
-# Extraction of the .txt files wich contain user data, settings, locations of the villages etc.
-userSettings = CreateDictionaryWithData("config.txt")
-barbarianVillageIdList = CreateDictionaryWithData("barbarianVillageIdList.txt")
-barbarianVillageLocations = CreateDictionaryWithData("barbarianVillageLocations.txt")
-armyUnits = CreateDictionaryWithData("attackSettings.txt")
+def SetWebDriverOptions():
+    """Sets the option to enable headles browser.
+       Headles allows running the browser in background.
+    """
+    options = Options()
+    options.set_headless(headless=True)
+    return options
 
 
-def ChooseBrowser(userSettings):
+def ChooseBrowser(userSettings, options):
     """open the equivalent browser based on
         the config file provided by the user
     """
     browserName = userSettings.get('InternetBrowser')
     result = {
-        'Firefox': lambda x: webdriver.Firefox(),
-        'Opera': lambda x: webdriver.Opera(options=options),
-        'Chrome': lambda x: webdriver.Chrome(chrome_options=options)
-    }[browserName](x=1)
+        'firefox': lambda x: webdriver.Firefox(options=options),
+        'opera': lambda x: webdriver.Opera(options=options),
+        'chrome': lambda x: webdriver.Chrome(chrome_options=options)
+    }[browserName.lower()](x=1)
+    if result == None:
+        print('Browser could not be specified.\n Please check your config.txt file.\n Supported browsers are:\nFirefox\nOpera\nChrome')
     return result
 
 
@@ -52,118 +52,165 @@ def CreateDictionaryWithData(fileName):
     return dictionary
 
 
-def LoginIntoTheGame(userSettings):
+def LoginIntoTheGame(userSettings, browser):
     """Function handles the process of locating and filling in the form
        which allows script to access the map where attacks are sent.
     """
+    # navigate to game site
+    browser.get('https://www.plemiona.pl/')
     usernameObject = browser.find_element_by_id('user')
     passwordObject = browser.find_element_by_id('password')
     usernameObject.send_keys(userSettings['Username'])
     passwordObject.send_keys(userSettings['Password'])
     passwordObject.submit()
+    try:
+        browser.find_element_by_class_name('auto-hide-box')
+        print('Login into the game site aborted.\n Please check whether your credentials:\nUsername: %s\nPassword: %s' % (
+            userSettings['Username'], userSettings['Password']))
+    except NoSuchElementException:
+        print('Login into the game site successful.')
 
 
-def CheckIfDailyLoginPopupisDisplayed():
+def SelectActiveWorld(browser, userSettings):
+    """Select the world where the attacks should be carried out
+       Active world is choosen based on the config.txt file and proceed
+       to the map panel.
+    """
+    try:
+        worldButtons = WebDriverWait(browser, 10).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "world_button_active")))
+    except NoSuchElementException:
+        print('You do not have any active worlds where you can send your troops\n Please choose a world in the game and activate the script again.')
+        print('Note: Remember to specify the world number in the config.txt file')
+        return False
+    for activeWorldButton in worldButtons:
+        activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[1]
+        if activeWorldNumber == userSettings['ActiveWorld']:
+            activeWorldButton.click()
+            CheckIfDailyLoginPopupisDisplayed(browser)
+            mapButton = browser.find_element_by_id("header_menu_link_map")
+            mapButton.click()
+            return True
+
+
+def CheckIfDailyLoginPopupisDisplayed(browser):
     """On the first login on the day the popup bonus appears
        This popup hovers the map button. Function checks whether
        element is displayed and if so then closes it.
     """
     try:
-        popupCloseButton = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "popup_box_close")))
+        popupCloseButton = browser.find_element_by_class_name("popup_box_close")
         popupCloseButton.click()
     except NoSuchElementException:
         return
 
 
-# Based on the config file chooses the supported browser.
-browser = ChooseBrowser(userSettings)
-
-# navigate to game site
-browser.get('https://www.plemiona.pl/')
-
-# Fill the loggin form with valid credentials
-
-
-# In case the bonus window opens (to receive daily login reward)
-
-
-LoginIntoTheGame(userSettings)
-# navigate to choosen active world
+def DisableHoveringJavaScriptObjects(browser):
+    """Disables the two elements which prevent the script from
+       selecting the villages correctly.
+    """
+    browser.execute_script("document.getElementById('map_mover').outerHTML = ''")
+    browser.execute_script("document.getElementById('special_effects_container').outerHTML = ''")
+    # for the headles option
+    browser.execute_script("document.getElementById('linkContainer').outerHTML = ''")
+    browser.execute_script("document.getElementById('footer').outerHTML = ''")
 
 
-##### MARK THIS WORKS FOR NOW FOR ONLY ONE ACTIVE WORLD ! #############
-## WAIT IS CRUCIAL BECAUSE PAGE MUST VERIFY YOUR CREDENCTIALS #####
-
-worldButton = WebDriverWait(browser, 10).until(
-    EC.presence_of_element_located((By.CLASS_NAME, "world_button_active")))
-worldButton.click()
-
-CheckIfDailyLoginPopupisDisplayed()
-# navigate to map in order to select barbarian villages
-# this also works but other option is more safe mapButton = browser.find_element_by_id("header_menu_link_map")
-
-mapButton = WebDriverWait(browser, 10).until(
-    EC.presence_of_element_located((By.ID, "header_menu_link_map")))
-mapButton.click()
-
-"""
-    This step is the biggest trouble for the whole application. The developers of the website did not make any special characteristics which could be used to define ONLY the barbarian villages or any specific village tbh.
-    The only specification which differs the villages is the 5 digit id stated on the end of link to the image.
-    Therefore the only solution which came to my mind is to provide the script (from user input) the id's of the villages where you want to send tropps to automatically.
-    You will have to get the id's of the villages by yoursefl (see appendix for instructions).
-
-                            ANOTHER TRY TO MAKE IT WORK ( TO MANY REQUESTS PER SECOND)
-    select input type to search based on name of the village
-    targetTypeRadioButtoon = browser.find_element_by_css_selector('[value=village_name]')
-    targetTypeRadioButtoon.click()
-    The input box is automatically focused so no need to select it just type in the barbarian village name
-    FOR POLISH VERSION = wioska barbarzynska
-    ###### HERE REQUEST ERROR HAPPENS BECAUSE FUCKY SHITY TEMPLATE WAS IMPLEMENTED ON SITE WHILE SEARCHING FOR VILLAGES (THE DROPDOWN MENU) //EVERY LETTER = NEW REQUEST
-    browser.switch_to_active_element().send_keys('wioska barb')
-"""
-
-# TODO add a file to read data from it (user will input there the last 5 digits of the id of each barbarian village he wants to send troops to)
-
-# maybe change only to read mode, create config file where everyting will be specified
-# allow access to the debugger sudo chmod -R a+rwx APPNAME/file
-######### Id's of the villages where you want to send troops to (the id ALWAYS consist of 5 digits), please enter each id in separate new line. ######
-"""
-    Here comes even more trouble. The map was designed this way that you are not able to click onto certain elements on the site without moving your mouse onto that element.
-    Basically the whole map is hovered by a map_mover, which disallows the script for clicking onto the target village instantly. Instead there must be a pop-up (a js event) triggered
-    to show the window which enables clicking onto the desired village.
-    SOLUTION 1
-    expliticly control the mouse, hover on the vilage and send troops (ActionChain)
-    SOLUTION 2
-    Still under progress ( try to fire JS event from selenium (browser.execute())) which will directly open certain popup ( not sure if this is even possible)
-"""
-####################################################  SOLUTION 2 ######################################################
-
-browser.execute_script("document.getElementById('map_mover').outerHTML = ''")
-browser.execute_script("document.getElementById('special_effects_container').outerHTML = ''")
-
-# TODO split this code into two separate functions and first one will be calling the second one.
-
-locationInputBoxes = browser.find_elements_by_class_name("centercoord")
+def CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputBoxes):
+    """Centers the map on the village which is the target of the attack.
+       While selecting the village in next step map must
+       be centered otherwise the locations of the villages do not correctly
+       respond to the images which represent them on the map. If the map
+       wouldn't be centered the script wouldn't be able to click on the targeted village.
+    """
+    for (locationInputBox, locationCordinateXY) in zip(locationInputBoxes, range(0, 2)):
+        locationInputBox.clear()
+        locationInputBox.send_keys(villageLocation.split("x")[locationCordinateXY])
+        browser.find_element_by_class_name('btn').click()
+        time.sleep(0.5)
 
 
-for (villageLocation, villageId, locationInputBox, numberOfLocation) in itertools.zip_longest(barbarianVillageLocations.values(), barbarianVillageIdList.values(), locationInputBoxes, range(0, 2)):
-        # 1. Center the map to not screw up the locations
-    locationInputBox.clear()
-    locationInputBox.send_keys(villageLocation.split("x")[numberOfLocation])
-    browser.find_element_by_class_name('btn').click()
-    villagePosition = browser.find_element_by_id("map_village_" + villageId)
+def LocateTheVillageOnTheMap(browser, villageId):
+    """Searches for the village based on the villageId provided in barbarianVillageIdList.txt.
+       Then opens the attack form.
+    """
+    villagePosition = WebDriverWait(browser, 10).until(
+        EC.element_to_be_clickable((By.ID, "map_village_" + villageId))
+    )
     villagePosition.click()
     attackButton = browser.find_element_by_id('mp_att')
     attackButton.click()
+
+
+def CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
+    """Checks whether user poses enough units to perform attack he requsted.
+    """
+    try:
+        browser.find_element_by_class_name('autoHideBox')
+    except NoSuchElementException:
+        return True
+
+    print('Troops to village under %s id located at %s has not been sent because you do not own enough army units!' % (
+        villageId, villageLocation))
+    return False
+
+
+def CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings):
+    """Check whether user allow sending single troops to targeted village.
+    """
+    try:
+        popupWarnning = browser.find_element_by_class_name('troop_confirm_go')
+    except NoSuchElementException:
+        print('Troops to village under %s id located at %s has been successfully sent.' % (
+            villageId, villageLocation))
+        return
+    if userSettings['AllowSendingOneTroopToTargetVillage'].lower() == 'yes':
+        popupWarnning.click()
+        print('One unit send to village under id %s located at %s ' % (
+            villageId, villageLocation))
+    else:
+        browser.find_element_by_class_name('popup_box_close').click()
+        print('Troop has not been sent becasue AllowSendingOneTroopToTargetVillag is disabled in config.txt.')
+        print('If you want to enable this option please change it in config.txt to Yes')
+
+
+def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, villageId):
+    """Fills the attack form with equivalent quantity of units stored in the
+       attackSettings.txt file provided by user.
+    """
     unitsObjectInputList = browser.find_elements_by_class_name('unitsInput')
-    for (inputObject, unitsQuantity) in zip(unitsObjectInputList, armyUnits.values()):
+    for (inputObject, unitsQuantity) in zip(unitsObjectInputList, armyUnits):
         inputObject.send_keys(unitsQuantity)
     browser.find_element_by_id("target_attack").click()
+    # Check whether this benefits for the script
+    if CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
+        CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings)
+    else:
+        browser.find_element_by_class_name('popup_box_close').click()
 
-# TODO Try to finalize the whole script that will automatically send troops for each id numer used
-# TODO create tutorial how to extract the 5 digit id numer from users browser
 
-# TODO Polish the code (maybe add some functions, split it, make it more clear)
+def main():
+    options = SetWebDriverOptions()
+    userSettings = CreateDictionaryWithData("config.txt")
+    barbarianVillageIdList = CreateDictionaryWithData("barbarianVillageIdList.txt")
+    barbarianVillageLocations = CreateDictionaryWithData("barbarianVillageLocations.txt")
+    armyUnits = CreateDictionaryWithData("attackSettings.txt")
+    browser = ChooseBrowser(userSettings, options)
+    if browser:
+        browser.maximize_window()
+        LoginIntoTheGame(userSettings, browser)
+        if SelectActiveWorld(browser, userSettings):
+            DisableHoveringJavaScriptObjects(browser)
+            locationInputBoxes = browser.find_elements_by_class_name("centercoord")
+            for (villageLocation, villageId) in zip(barbarianVillageLocations.values(), barbarianVillageIdList.values()):
+                CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputBoxes)
+                LocateTheVillageOnTheMap(browser, villageId)
+                FillTheAttackForm(browser, armyUnits.values(),
+                                  userSettings, villageLocation, villageId)
+        browser.quit()
+    else:
+        print('An error occured please check the log displayed in your console.')
 
-# TODO commit the code to github repository
+
+if __name__ == "__main__":
+    main()
