@@ -65,10 +65,11 @@ def LoginIntoTheGame(userSettings, browser):
     passwordObject.submit()
     try:
         browser.find_element_by_class_name('auto-hide-box')
-        print('Login into the game site aborted.\n Please check whether your credentials:\nUsername: %s\nPassword: %s' % (
-            userSettings['Username'], userSettings['Password']))
     except NoSuchElementException:
         print('Login into the game site successful.')
+    else:
+        print('Login into the game site aborted.\n Please check whether your credentials:\nUsername: %s\nPassword: %s' % (
+            userSettings['Username'], userSettings['Password']))
 
 
 def SelectActiveWorld(browser, userSettings):
@@ -83,14 +84,15 @@ def SelectActiveWorld(browser, userSettings):
         print('You do not have any active worlds where you can send your troops\n Please choose a world in the game and activate the script again.')
         print('Note: Remember to specify the world number in the config.txt file')
         return False
-    for activeWorldButton in worldButtons:
-        activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[1]
-        if activeWorldNumber == userSettings['ActiveWorld']:
-            activeWorldButton.click()
-            CheckIfDailyLoginPopupisDisplayed(browser)
-            mapButton = browser.find_element_by_id("header_menu_link_map")
-            mapButton.click()
-            return True
+    else:
+        for activeWorldButton in worldButtons:
+            activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[1]
+            if activeWorldNumber == userSettings['ActiveWorld']:
+                activeWorldButton.click()
+                CheckIfDailyLoginPopupisDisplayed(browser)
+                mapButton = browser.find_element_by_id("header_menu_link_map")
+                mapButton.click()
+                return True
 
 
 def CheckIfDailyLoginPopupisDisplayed(browser):
@@ -100,9 +102,11 @@ def CheckIfDailyLoginPopupisDisplayed(browser):
     """
     try:
         popupCloseButton = browser.find_element_by_class_name("popup_box_close")
-        popupCloseButton.click()
     except NoSuchElementException:
         return
+
+    else:
+        popupCloseButton.click()
 
 
 def DisableHoveringJavaScriptObjects(browser):
@@ -127,7 +131,7 @@ def CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputB
         locationInputBox.clear()
         locationInputBox.send_keys(villageLocation.split("x")[locationCordinateXY])
         browser.find_element_by_class_name('btn').click()
-        time.sleep(0.5)
+        time.sleep(0.25)
 
 
 def LocateTheVillageOnTheMap(browser, villageId):
@@ -146,13 +150,14 @@ def CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
     """Checks whether user poses enough units to perform attack he requsted.
     """
     try:
-        browser.find_element_by_class_name('autoHideBox')
+        browser.find_element(By.CSS_SELECTOR, '.autoHideBox.error')
     except NoSuchElementException:
         return True
 
-    print('Troops to village under %s id located at %s has not been sent because you do not own enough army units!' % (
-        villageId, villageLocation))
-    return False
+    else:
+        print('Troops to village under %s id located at %s has not been sent because you do not own enough army units!' % (
+            villageId, villageLocation))
+        return False
 
 
 def CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings):
@@ -164,14 +169,15 @@ def CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, us
         print('Troops to village under %s id located at %s has been successfully sent.' % (
             villageId, villageLocation))
         return
-    if userSettings['AllowSendingOneTroopToTargetVillage'].lower() == 'yes':
-        popupWarnning.click()
-        print('One unit send to village under id %s located at %s ' % (
-            villageId, villageLocation))
     else:
-        browser.find_element_by_class_name('popup_box_close').click()
-        print('Troop has not been sent becasue AllowSendingOneTroopToTargetVillag is disabled in config.txt.')
-        print('If you want to enable this option please change it in config.txt to Yes')
+        if userSettings['AllowSendingOneTroopToTargetVillage'].lower() == 'yes':
+            popupWarnning.click()
+            print('One unit send to village under id %s located at %s ' % (
+                villageId, villageLocation))
+        else:
+            browser.find_element_by_class_name('popup_box_close').click()
+            print('Troop has not been sent becasue AllowSendingOneTroopToTargetVillag is disabled in config.txt.')
+            print('If you want to enable this option please change it in config.txt to Yes')
 
 
 def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, villageId):
@@ -182,7 +188,6 @@ def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, village
     for (inputObject, unitsQuantity) in zip(unitsObjectInputList, armyUnits):
         inputObject.send_keys(unitsQuantity)
     browser.find_element_by_id("target_attack").click()
-    # Check whether this benefits for the script
     if CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
         CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings)
     else:
@@ -212,5 +217,5 @@ def main():
         print('An error occured please check the log displayed in your console.')
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

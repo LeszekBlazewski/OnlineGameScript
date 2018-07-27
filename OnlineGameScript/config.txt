@@ -1,5 +1,5 @@
 Username-
 Password-
-InternetBrowser-Firefox
-language-
-ActiveWorld-
+InternetBrowser-firefox
+ActiveWorld-130
+AllowSendingOneTroopToTargetVillage-yes

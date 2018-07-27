@@ -1,12 +1,12 @@
-Spear fighter-100
-Swordsman-200
-Axeman-543
-Archer-800
-Scout -900
-Light cavalry-654
-Mounted archer-123
-Heavy cavalry-53
-Ram-23
-Catapult-235
-Paladin-3124
-Nobleman-532
+Spear fighter-1
+Swordsman-
+Axeman-
+Archer-
+Scout -
+Light cavalry-
+Mounted archer-
+Heavy cavalry-
+Ram-
+Catapult-
+Paladin-
+Nobleman-
