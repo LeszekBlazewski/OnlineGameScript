@@ -13,6 +13,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import TimeoutException
 import time
 
 
@@ -29,7 +30,7 @@ def ChooseBrowser(userSettings, options):
     """open the equivalent browser based on
         the config file provided by the user
     """
-    browserName = userSettings.get('InternetBrowser')
+    browserName = userSettings.get('InternetBrowser').lower()
     result = {
         'firefox': lambda x: webdriver.Firefox(options=options),
         'opera': lambda x: webdriver.Opera(options=options),
@@ -64,12 +65,16 @@ def LoginIntoTheGame(userSettings, browser):
     passwordObject.send_keys(userSettings['Password'])
     passwordObject.submit()
     try:
-        browser.find_element_by_class_name('auto-hide-box')
-    except NoSuchElementException:
+        WebDriverWait(browser, 1).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.auto-hide-box.error-box'))
+        )
+    except (TimeoutException):
         print('Login into the game site successful.')
+        return True
     else:
-        print('Login into the game site aborted.\n Please check whether your credentials:\nUsername: %s\nPassword: %s' % (
+        print('Login into the game site aborted.\n Please check whether your credentials are valid:\nUsername: %s\nPassword: %s' % (
             userSettings['Username'], userSettings['Password']))
+        return False
 
 
 def SelectActiveWorld(browser, userSettings):
@@ -78,9 +83,10 @@ def SelectActiveWorld(browser, userSettings):
        to the map panel.
     """
     try:
-        worldButtons = WebDriverWait(browser, 10).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "world_button_active")))
-    except NoSuchElementException:
+        worldButtons = WebDriverWait(browser, 1).until(
+            EC.presence_of_all_elements_located((By.CLASS_NAME, "world_button_active"))
+        )
+    except (TimeoutException):
         print('You do not have any active worlds where you can send your troops\n Please choose a world in the game and activate the script again.')
         print('Note: Remember to specify the world number in the config.txt file')
         return False
@@ -89,6 +95,7 @@ def SelectActiveWorld(browser, userSettings):
             activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[1]
             if activeWorldNumber == userSettings['ActiveWorld']:
                 activeWorldButton.click()
+                print('world %s has been selected.' % activeWorldNumber)
                 CheckIfDailyLoginPopupisDisplayed(browser)
                 mapButton = browser.find_element_by_id("header_menu_link_map")
                 mapButton.click()
@@ -203,15 +210,16 @@ def main():
     browser = ChooseBrowser(userSettings, options)
     if browser:
         browser.maximize_window()
-        LoginIntoTheGame(userSettings, browser)
-        if SelectActiveWorld(browser, userSettings):
-            DisableHoveringJavaScriptObjects(browser)
-            locationInputBoxes = browser.find_elements_by_class_name("centercoord")
-            for (villageLocation, villageId) in zip(barbarianVillageLocations.values(), barbarianVillageIdList.values()):
-                CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputBoxes)
-                LocateTheVillageOnTheMap(browser, villageId)
-                FillTheAttackForm(browser, armyUnits.values(),
-                                  userSettings, villageLocation, villageId)
+        if LoginIntoTheGame(userSettings, browser):
+            if SelectActiveWorld(browser, userSettings):
+                DisableHoveringJavaScriptObjects(browser)
+                locationInputBoxes = browser.find_elements_by_class_name("centercoord")
+                for (villageLocation, villageId) in zip(barbarianVillageLocations.values(), barbarianVillageIdList.values()):
+                    CenterTheMapOnTargetVillageLocation(
+                        browser, villageLocation, locationInputBoxes)
+                    LocateTheVillageOnTheMap(browser, villageId)
+                    FillTheAttackForm(browser, armyUnits.values(),
+                                      userSettings, villageLocation, villageId)
         browser.quit()
     else:
         print('An error occured please check the log displayed in your console.')
