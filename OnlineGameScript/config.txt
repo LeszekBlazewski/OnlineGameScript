@@ -2,4 +2,5 @@ Username-
 Password-
 InternetBrowser-firefox
 ActiveWorld-130
+LanguageOfTheSiteYouAreCurrentlyPlaying-pol
 AllowSendingOneTroopToTargetVillage-yes
