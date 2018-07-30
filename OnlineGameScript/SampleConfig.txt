@@ -1,0 +1,6 @@
+Username-ValidUsername1
+Password-ValidPassword2
+InternetBrowser-firefox
+ActiveWorld-130
+LanguageOfTheSiteYouAreCurrentlyPlaying-pol
+AllowSendingOneTroopToTargetVillage-yes
