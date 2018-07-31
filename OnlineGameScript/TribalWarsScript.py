@@ -3,7 +3,7 @@
     File name: PlemionaScript.py
     Author: Leszek Błażewski
     Description: The main purpose of this script is to automate the boring
-    process of sending troops to other barbarian villages.
+    process of sending troops to barbarian villages.
 """
 
 # Modules needed to execute the script correctly
@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import InvalidArgumentException
 import time
 
 
@@ -56,9 +57,18 @@ def CreateDictionaryWithData(fileName):
 def LoginIntoTheGame(userSettings, browser):
     """Function handles the process of locating and filling in the form
        which allows script to access the map where attacks are sent.
+       Also opens the game website based on the URL provided in config.txt file.
     """
     # navigate to game site
-    browser.get('https://www.plemiona.pl/')
+    # This operation is necessary becasue accounts are not shared between servers.
+    # Therefore website must be opened in specify language in order to successfully login in to the game.
+    websiteLink = userSettings.get('LinkToGameWebsite')
+    try:
+        browser.get(websiteLink)
+    except InvalidArgumentException:
+        print("Link to website specified in config.txt file does not match any website!\nPlease check whether %s  specified in config.txt file is correct." % websiteLink)
+        return False
+
     usernameObject = browser.find_element_by_id('user')
     passwordObject = browser.find_element_by_id('password')
     usernameObject.send_keys(userSettings['Username'])
@@ -145,9 +155,13 @@ def LocateTheVillageOnTheMap(browser, villageId):
     """Searches for the village based on the villageId provided in barbarianVillageIdList.txt.
        Then opens the attack form.
     """
-    villagePosition = WebDriverWait(browser, 10).until(
-        EC.element_to_be_clickable((By.ID, "map_village_" + villageId))
-    )
+    try:
+        villagePosition = WebDriverWait(browser, 3).until(
+            EC.element_to_be_clickable((By.ID, "map_village_" + villageId))
+        )
+    except TimeoutException:
+        print('Village with id %s could not be located.\n Please check whether the %s and location in barbarianVillageIdList.txt and barbarianVillageLocations.txt are correct.' % villageId)
+
     villagePosition.click()
     attackButton = browser.find_element_by_id('mp_att')
     attackButton.click()
@@ -220,6 +234,7 @@ def main():
                     LocateTheVillageOnTheMap(browser, villageId)
                     FillTheAttackForm(browser, armyUnits.values(),
                                       userSettings, villageLocation, villageId)
+        print('All of the operations for this execution of the script has been performed.')
         browser.quit()
     else:
         print('An error occured please check the log displayed in your console.')
