@@ -30,11 +30,16 @@ Username -- Here you enter the username which is used to log in to TribalWars si
 Password -- Password which is used to log in to the game site.
 InternetBrowser -- You have 3 options here: firefox, chrome, opera
 ActiveWorld -- Number of the world on which the script should work.
+LinkToGameWebsite -- Here paste the link from your browser which you use to log in into the game when accessing your account.
 AllowSendingOneTroopToTargetVillage -- There are two options yes/no
 
 * ActiveWorld
   For example i am playing on two worlds - World_130 and World_148 ( These are chosen right after you successfully log in to the site ) ( The are displayed as beige buttons)
   You have to specify the number of world on which script should work. If you want to use it on multiple worlds just run the script over and over again with changed config.txt file
+
+* LinkToGameWebsite
+  Simply navigate to the site where you log in to the game whenever you want to play.
+  When you have got displayed the site where you choose the active world on which you want to play, copy the URL from address bar and paste it in the config.txt file. (NOTE: DO NOT INCLUDE SPACE AFTER HYPHEN - )
 
 *AllowSendingOneTroopToTargetVillage
   There is always a warning whenever you are trying to send 1 troop to village so this options allows or disallows it.
@@ -51,7 +56,9 @@ Once you are done with editing your config.txt it's time for extracting informat
 This two files ( barbarianVillageIdList.txt and barbarianVillageLocations.txt) contain the information about the targeted villages.
 In order to make the script work you have to extract the specific id which reefer to villages where you want to send your troops.
 
-You can check out how sample barbarianVillageIdList and barbarianVillageLocations files look like by opening the Sample files with equivalent names.( I know that it does not look as clear as previous file but you will get it in a sec ! I promise :)
+You can check out how sample barbarianVillageIdList and barbarianVillageLocations files look like by opening the Sample files with equivalent names.
+I know that it does not look as clear as previous file but you will get it in a sec !
+I promise :)
 
 The file barbarianVillageIdList.txt contains 5 digit Id's of the villages where you want to send your attack.
 In addition to that barbarianVillageLocations.txt contains the coordinates of the villages where you want to send your attack.
@@ -64,7 +71,9 @@ Step 1 Locate the villages where the attacks will be sent - Every barbarian vill
 
       When you are getting the coordinates you can also gather the id of the map. ( See B step to get it.)
 
-    B) extract the id of the specific village.      *** FOR EASIER SETUP WATCH THE VIDEO get_the_id_of_the_targeted_village.mp4  ***
+    B) extract the id of the specific village.
+
+    *** FOR EASIER SETUP WATCH THE VIDEO get_the_id_of_the_targeted_village.mp4  ***
 
     This is the hardest step of the whole configuration.
 
@@ -78,9 +87,9 @@ Step 1 Locate the villages where the attacks will be sent - Every barbarian vill
 
     3. From the drop down menu chose: Inspect Element.
 
-    4. Once the console is opened you will see a bunch of code - don't worry tho keep it cool.
+    4. Once the console is opened you will see a bunch of code - don't worry tho, keep it cool.
 
-    5. After right clicking your mouse on the village don't touch it just look at the code and check this line: <a id="map" href="/game.php?village=67762&screen=info_village&id=63886&"
+    5. After right clicking your mouse on the village don't move the mouse cursor. Just look at the code and check this line: <a id="map" href="/game.php?village=67762&screen=info_village&id=63886&"
 
     6. As you can see the id which we are looking for is right at the end of the link !
 
