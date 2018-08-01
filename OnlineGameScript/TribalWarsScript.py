@@ -18,12 +18,22 @@ from selenium.common.exceptions import InvalidArgumentException
 import time
 
 
-def SetWebDriverOptions():
+def SetWebDriverOptions(userSettings):
     """Sets the option to enable headles browser.
        Headles allows running the browser in background.
     """
-    options = Options()
-    options.set_headless(headless=True)
+    browserName = userSettings.get('InternetBrowser').lower()
+    if browserName == 'firefox':
+        options = Options()
+        options.set_headless(headless=True)
+    elif browserName == 'chrome':
+        options = webdriver.ChromeOptions()
+        options.add_argument("--start-maximized")
+        options.add_argument('--headless')
+    elif browserName == 'opera':
+        options = webdriver.ChromeOptions()
+        options.binary_location = "C:\Program Files\Opera\launcher.exe"
+
     return options
 
 
@@ -121,7 +131,6 @@ def CheckIfDailyLoginPopupisDisplayed(browser):
         popupCloseButton = browser.find_element_by_class_name("popup_box_close")
     except NoSuchElementException:
         return
-
     else:
         popupCloseButton.click()
 
@@ -132,9 +141,10 @@ def DisableHoveringJavaScriptObjects(browser):
     """
     browser.execute_script("document.getElementById('map_mover').outerHTML = ''")
     browser.execute_script("document.getElementById('special_effects_container').outerHTML = ''")
-    # for the headles option
+    # for the headless option
     browser.execute_script("document.getElementById('linkContainer').outerHTML = ''")
     browser.execute_script("document.getElementById('footer').outerHTML = ''")
+    browser.execute_script("document.getElementById('bottom').outerHTML = ''")
 
 
 def CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputBoxes):
@@ -144,11 +154,15 @@ def CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputB
        respond to the images which represent them on the map. If the map
        wouldn't be centered the script wouldn't be able to click on the targeted village.
     """
-    for (locationInputBox, locationCordinateXY) in zip(locationInputBoxes, range(0, 2)):
-        locationInputBox.clear()
-        locationInputBox.send_keys(villageLocation.split("x")[locationCordinateXY])
-        browser.find_element_by_class_name('btn').click()
-        time.sleep(0.25)
+    try:
+        for (locationInputBox, locationCordinateXY) in zip(locationInputBoxes, range(0, 2)):
+            locationInputBox.clear()
+            locationInputBox.send_keys(villageLocation.split("x")[locationCordinateXY])
+            browser.find_element_by_class_name('btn').click()
+            time.sleep(0.25)
+    except IndexError:
+        print('Please check whether village locations specified in barbarianVillageLocations.txt file are correct.')
+
 
 
 def LocateTheVillageOnTheMap(browser, villageId):
@@ -205,10 +219,12 @@ def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, village
     """Fills the attack form with equivalent quantity of units stored in the
        attackSettings.txt file provided by user.
     """
+    time.sleep(1)   ### This wait is necessary for opera and chrome browser
     unitsObjectInputList = browser.find_elements_by_class_name('unitsInput')
     for (inputObject, unitsQuantity) in zip(unitsObjectInputList, armyUnits):
         inputObject.send_keys(unitsQuantity)
     browser.find_element_by_id("target_attack").click()
+    time.sleep(1)                                                                       ##### EDIT
     if CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
         CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings)
     else:
@@ -216,11 +232,11 @@ def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, village
 
 
 def main():
-    options = SetWebDriverOptions()
     userSettings = CreateDictionaryWithData("config.txt")
     barbarianVillageIdList = CreateDictionaryWithData("barbarianVillageIdList.txt")
     barbarianVillageLocations = CreateDictionaryWithData("barbarianVillageLocations.txt")
     armyUnits = CreateDictionaryWithData("attackSettings.txt")
+    options = SetWebDriverOptions(userSettings)
     browser = ChooseBrowser(userSettings, options)
     if browser:
         browser.maximize_window()
@@ -234,11 +250,11 @@ def main():
                     LocateTheVillageOnTheMap(browser, villageId)
                     FillTheAttackForm(browser, armyUnits.values(),
                                       userSettings, villageLocation, villageId)
-        print('All of the operations for this execution of the script has been performed.')
+        print('\nAll of the operations for this execution of the script has been performed.')
         browser.quit()
     else:
-        print('An error occured please check the log displayed in your console.')
-
+        print('\nAn error occured please check the log displayed in your console.')
 
 if __name__ == '__main__':
     main()
+    input('\nPress ENTER to exit the console')
