@@ -29,6 +29,18 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
     c) Opera - navigate to https://github.com/operasoftware/operachromiumdriver/releases
        From the list choose driver which correctly corespondents to your operation system needs.
 
+       *** REALLY IMPORTANT ***
+	Opera must be installed on your C drive. The best option is to NOT change default settings durning the instalation. 	
+	The path to opera executable must look like that:
+
+		C:\Program Files\Opera\launcher.exe
+
+	You can check whether your opera is correctly installed by going to desktop right clicking opera launcher then choosing options from drop down menu and looking on the path specified in target.
+
+	** NOTE ***
+	When the script works please don't perform any tasks. Firefox and chrome support headless options therefore the script is running in background and you won't see anything. You can do whatever you want.
+
+	Sadly Opera doesn't have this feature therefore you have to wait until the script completes its tasks. ( You can watch the lighting fast process of farming in this time :D )
 
             ################################################################################
             #                       Instruction for LINUX users                            #
@@ -37,6 +49,7 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 4. Set up the downloaded driver properly.
 
     A) Step 1.
+
        Extract the downloaded file by using this command in terminal:
 
        tar -xvzf nameOfYourDriver
@@ -48,6 +61,7 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
        NOTE EXAMPLE MAY NOT MUCH THE ACTUAL NAME OF THE DRIVER SINCE NEW DRIVERS ARE RELEASED AS THE BROWSERS GET UPDATES.
 
     B) Step 2.
+
        Put the extracted driver in directory which is added to the system variable $PATH.
 
        a) Check your $PATH variable by running this script in terminal:
@@ -83,46 +97,25 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 4. Set up the downloaded driver properly.
 
   A) Step 1.
+
      Extract the downloaded file.
 
+  B) Step 2.
 
+     Now you have to add the geckodriver to your system variable path.
 
+	1) I recommend moving the driver into folder which will not be accessed by you pretty often.
 
+	   You don't want to accidentally remove it from your PC because this will prevent the script from accessing your browser.
 
+	   I HIGHLY recommend watching this video: https://www.youtube.com/watch?v=KNzGtHI_60o  
 
+	   which shows exactly how to add geckodriver to your system variables.
 
+	   Just follow the steps shown in this video and you will be ready to start farming ! 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	   *** WATCHOUT !!! The system variables (PATH) are shown in the window which is displayed on the bottom (the lower one) ***
+ 
 
 
 
