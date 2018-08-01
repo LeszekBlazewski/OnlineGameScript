@@ -1,6 +1,6 @@
 Username-ValidUsername1
 Password-ValidPassword2
-InternetBrowser-firefox
+InternetBrowser-chrome
 ActiveWorld-130
 LinkToGameWebsite-https://www.plemiona.pl/
 AllowSendingOneTroopToTargetVillage-yes

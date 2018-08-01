@@ -1,9 +1,9 @@
-Spear fighter-1
-Swordsman-
+Spear fighter-3
+Swordsman-5
 Axeman-
 Archer-
 Scout -
-Light cavalry-
+Light cavalry-2
 Mounted archer-
 Heavy cavalry-
 Ram-
