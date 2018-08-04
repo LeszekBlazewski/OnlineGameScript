@@ -5,7 +5,7 @@ https://www.tribalwars.works/
 
 ## Installation
 
-You can find detailed instalation guide right here: [Instalation guide](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/README1_INSTALATION_GUIDE.txt)
+You can find detailed instalation guide right here: [Instalation guide](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/installationGuides/README1_INSTALATION_GUIDE.txt)
 
 ### Requirements
 * Linux or Windows
@@ -23,7 +23,7 @@ After installing python on your machine.  Simply open terminal on linux or cmd o
 
 ## Usage
 
-You can find the in-depth user guide here : [How to use Tribalwars script](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/README2_HOW_2_USE_THE_SCRIPT_GUIDE.txt)
+You can find the in-depth user guide here : [How to use Tribalwars script](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/installationGuides/README2_HOW_2_USE_THE_SCRIPT_GUIDE.txt)
 
 
 ## Contributing
