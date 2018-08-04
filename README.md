@@ -1,17 +1,37 @@
-# Background information 
-Hi !
+# OnlineGameScript ![CI status](https://img.shields.io/badge/build-passing-brightgreen.svg)
 
-My name is Leszek.
+TribalWarsScript is a python script which automates the boring process of sending troops to barbarian villages ( A.K.A. farming) in online flash game:
+https://www.tribalwars.works/
 
-I am currently studying computer science at Wrocław University of Science and Technology at Faculty of Electronics.
-I started my journey as a programmer right after I have finished High-school (2017). Since then I am trying different technologies and programming languages. I started as a C++ developer and that allowed me to understand most of the object oriented programming principles. Recently I discovered and understood the beauty of modern high-level programming languages such as C# and Python.  
-I spend most of my free time on coding and learning. Otherwise I am hanging out with friends and playing basketball.
+## Installation
+
+You can find detailed instalation guide right here: [Instalation guide](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/README1_INSTALATION_GUIDE.txt)
+
+### Requirements
+* Linux or Windows
+* Python 3.6.6
+* One of the browsers:
+	* Firefox
+	* Chrome
+	* Opera
+* Selenium module installed
+* Driver configured for your chosen browser
+
+After installing python on your machine.  Simply open terminal on linux or cmd on Windows and enter run this command
+
+`$ pip install selenium`
+
+## Usage
+
+You can find the in-depth user guide here : [How to use Tribalwars script](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/README2_HOW_2_USE_THE_SCRIPT_GUIDE.txt)
 
 
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
-# Description of the repository
-This repository contains all my simple projects which were developed in order to learn the basics of solving different problems in world of computer science.
+Please make sure to update tests as appropriate.
 
-There are different languages in here because i am still not sure which way i want to head to. That's the reason why I am trying different technologies and programming languages in order to get a grip on one that suits me the best.
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
 
 
