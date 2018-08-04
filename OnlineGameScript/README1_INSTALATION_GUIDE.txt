@@ -11,6 +11,10 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
    There are many tutorials floating around the net just type "install python on windows/linux" based on your OS in goggle and follow the guide.
    Remember to download the 3.6.6 version from: https://www.python.org/
 
+C) Installed selenium module. After you have installed python simply run this command in terminal on linux or cmd on Windows.
+
+      $ pip install selenium
+
 2. Supported browsers for this script are :
     1)Firefox
     2)Chrome
@@ -30,7 +34,7 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
        From the list choose driver which correctly corespondents to your operation system needs.
 
        *** REALLY IMPORTANT ***
-	Opera must be installed on your C drive. The best option is to NOT change default settings durning the instalation. 	
+	Opera must be installed on your C drive. The best option is to NOT change default settings durning the instalation.
 	The path to opera executable must look like that:
 
 		C:\Program Files\Opera\launcher.exe
@@ -52,7 +56,7 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 
        Extract the downloaded file by using this command in terminal:
 
-       tar -xvzf nameOfYourDriver
+      $ tar -xvzf nameOfYourDriver
 
        where nameOfYourDriver is dependent on the browser you have chosen.
 
@@ -66,14 +70,14 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 
        a) Check your $PATH variable by running this script in terminal:
 
-       echo $PATH
+      $ echo $PATH
 
        Option 1:
 
        If you are able to locate the /usr/bin directory in your terminal than execute this commands:
 
-       sudo chmod +x nameOfYourDriver
-       sudo mv nameOfYourDriver /usr/bin/
+      $ sudo chmod +x nameOfYourDriver
+      $ sudo mv nameOfYourDriver /usr/bin/
 
        Option 2:
 
@@ -83,7 +87,7 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 
        or you can simply type this into your terminal and press enter:
 
-       echo "PATH=\$PATH:/usr/bin" >> ~/.bashrc
+      $ echo "PATH=\$PATH:/usr/bin" >> ~/.bashrc
 
        After executing the script above the directory /usr/bin should be in the $PATH variable (you can check it with command: echo $PATH)
 
@@ -102,20 +106,20 @@ B) Installed python - 3.6.6 version recommended with environmental variables set
 
   B) Step 2.
 
-     Now you have to add the geckodriver to your system variable path.
+     Now you have to add the browser driver to your system variable path.
 
 	1) I recommend moving the driver into folder which will not be accessed by you pretty often.
 
 	   You don't want to accidentally remove it from your PC because this will prevent the script from accessing your browser.
 
-	   I HIGHLY recommend watching this video: https://www.youtube.com/watch?v=KNzGtHI_60o  
+	   I HIGHLY recommend watching this video: https://www.youtube.com/watch?v=KNzGtHI_60o
 
-	   which shows exactly how to add geckodriver to your system variables.
+	   which shows exactly how to add browser driver to your system variables.
 
-	   Just follow the steps shown in this video and you will be ready to start farming ! 
+	   Just follow the steps shown in this video and you will be ready to start farming !
 
-	   *** WATCHOUT !!! The system variables (PATH) are shown in the window which is displayed on the bottom (the lower one) ***
- 
+	   *** WATCHOUT !!! The system variables (PATH) are shown in the window displayed on the bottom (the lower one) ***
+
 
 
 
