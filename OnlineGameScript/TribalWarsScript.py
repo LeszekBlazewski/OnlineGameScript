@@ -86,7 +86,8 @@ def LoginIntoTheGame(userSettings, browser):
     passwordObject.submit()
     try:
         WebDriverWait(browser, 1).until(
-            EC.presence_of_element_located((By.CSS_SELECTOR, '.auto-hide-box.error-box'))
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, '.auto-hide-box.error-box'))
         )
     except (TimeoutException):
         print('Login into the game site successful.')
@@ -104,7 +105,8 @@ def SelectActiveWorld(browser, userSettings):
     """
     try:
         worldButtons = WebDriverWait(browser, 1).until(
-            EC.presence_of_all_elements_located((By.CLASS_NAME, "world_button_active"))
+            EC.presence_of_all_elements_located(
+                (By.CLASS_NAME, "world_button_active"))
         )
     except (TimeoutException):
         print('You do not have any active worlds where you can send your troops\n Please choose a world in the game and activate the script again.')
@@ -112,7 +114,8 @@ def SelectActiveWorld(browser, userSettings):
         return False
     else:
         for activeWorldButton in worldButtons:
-            activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[1]
+            activeWorldNumber = activeWorldButton.get_attribute('innerHTML').split()[
+                1]
             if activeWorldNumber == userSettings['ActiveWorld']:
                 activeWorldButton.click()
                 print('world %s has been selected.' % activeWorldNumber)
@@ -128,7 +131,8 @@ def CheckIfDailyLoginPopupisDisplayed(browser):
        element is displayed and if so then closes it.
     """
     try:
-        popupCloseButton = browser.find_element_by_class_name("popup_box_close")
+        popupCloseButton = browser.find_element_by_class_name(
+            "popup_box_close")
     except NoSuchElementException:
         return
     else:
@@ -136,13 +140,15 @@ def CheckIfDailyLoginPopupisDisplayed(browser):
 
 
 def DisableHoveringJavaScriptObjects(browser):
-    """Disables the two elements which prevent the script from
+    """Disables the elements which prevent the script from
        selecting the villages correctly.
     """
-    browser.execute_script("document.getElementById('map_mover').outerHTML = ''")
-    browser.execute_script("document.getElementById('special_effects_container').outerHTML = ''")
-    # for the headless option
-    browser.execute_script("document.getElementById('linkContainer').outerHTML = ''")
+    browser.execute_script(
+        "document.getElementById('map_mover').outerHTML = ''")
+    browser.execute_script(
+        "document.getElementById('special_effects_container').outerHTML = ''")
+    browser.execute_script(
+        "document.getElementById('linkContainer').outerHTML = ''")
     browser.execute_script("document.getElementById('footer').outerHTML = ''")
     browser.execute_script("document.getElementById('bottom').outerHTML = ''")
 
@@ -157,12 +163,12 @@ def CenterTheMapOnTargetVillageLocation(browser, villageLocation, locationInputB
     try:
         for (locationInputBox, locationCordinateXY) in zip(locationInputBoxes, range(0, 2)):
             locationInputBox.clear()
-            locationInputBox.send_keys(villageLocation.split("x")[locationCordinateXY])
+            locationInputBox.send_keys(
+                villageLocation.split("x")[locationCordinateXY])
             browser.find_element_by_class_name('btn').click()
             time.sleep(0.25)
     except IndexError:
         print('Please check whether village locations specified in barbarianVillageLocations.txt file are correct.')
-
 
 
 def LocateTheVillageOnTheMap(browser, villageId):
@@ -211,30 +217,35 @@ def CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, us
                 villageId, villageLocation))
         else:
             browser.find_element_by_class_name('popup_box_close').click()
-            print('Troop has not been sent becasue AllowSendingOneTroopToTargetVillag is disabled in config.txt.')
-            print('If you want to enable this option please change it in config.txt to Yes')
+            print(
+                'Troop has not been sent becasue AllowSendingOneTroopToTargetVillag is disabled in config.txt.')
+            print(
+                'If you want to enable this option please change it in config.txt to Yes')
 
 
 def FillTheAttackForm(browser, armyUnits, userSettings, villageLocation, villageId):
     """Fills the attack form with equivalent quantity of units stored in the
        attackSettings.txt file provided by user.
     """
-    time.sleep(1)   ### This wait is necessary for opera and chrome browser
+    time.sleep(1)  # This wait is necessary for opera and chrome browser
     unitsObjectInputList = browser.find_elements_by_class_name('unitsInput')
     for (inputObject, unitsQuantity) in zip(unitsObjectInputList, armyUnits):
         inputObject.send_keys(unitsQuantity)
     browser.find_element_by_id("target_attack").click()
-    time.sleep(1)                                                                       ##### EDIT
+    time.sleep(1)
     if CheckIfUserHasSufficientArmyUnits(browser, villageId, villageLocation):
-        CheckIfUserAllowsSendingSingleTroops(browser, villageId, villageLocation, userSettings)
+        CheckIfUserAllowsSendingSingleTroops(
+            browser, villageId, villageLocation, userSettings)
     else:
         browser.find_element_by_class_name('popup_box_close').click()
 
 
 def main():
     userSettings = CreateDictionaryWithData("config.txt")
-    barbarianVillageIdList = CreateDictionaryWithData("barbarianVillageIdList.txt")
-    barbarianVillageLocations = CreateDictionaryWithData("barbarianVillageLocations.txt")
+    barbarianVillageIdList = CreateDictionaryWithData(
+        "barbarianVillageIdList.txt")
+    barbarianVillageLocations = CreateDictionaryWithData(
+        "barbarianVillageLocations.txt")
     armyUnits = CreateDictionaryWithData("attackSettings.txt")
     options = SetWebDriverOptions(userSettings)
     browser = ChooseBrowser(userSettings, options)
@@ -243,17 +254,20 @@ def main():
         if LoginIntoTheGame(userSettings, browser):
             if SelectActiveWorld(browser, userSettings):
                 DisableHoveringJavaScriptObjects(browser)
-                locationInputBoxes = browser.find_elements_by_class_name("centercoord")
+                locationInputBoxes = browser.find_elements_by_class_name(
+                    "centercoord")
                 for (villageLocation, villageId) in zip(barbarianVillageLocations.values(), barbarianVillageIdList.values()):
                     CenterTheMapOnTargetVillageLocation(
                         browser, villageLocation, locationInputBoxes)
                     LocateTheVillageOnTheMap(browser, villageId)
                     FillTheAttackForm(browser, armyUnits.values(),
                                       userSettings, villageLocation, villageId)
-        print('\nAll of the operations for this execution of the script has been performed.')
+        print(
+            '\nAll of the operations for this execution of the script has been performed.')
         browser.quit()
     else:
         print('\nAn error occured please check the log displayed in your console.')
+
 
 if __name__ == '__main__':
     main()
