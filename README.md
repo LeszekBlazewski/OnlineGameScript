@@ -25,6 +25,9 @@ After installing python on your machine.  Simply open terminal on linux or cmd o
 
 You can find the in-depth user guide here : [How to use Tribalwars script](https://github.com/LeszekBlazewski/OnlineGameScript/blob/master/OnlineGameScript/installationGuides/README2_HOW_2_USE_THE_SCRIPT_GUIDE.txt)
 
+After setting everything up in config files simply go to the folder where TribalWarsScript.py is and run the following command in terminal/console:
+
+`$python TribalWarsScript.py`
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
