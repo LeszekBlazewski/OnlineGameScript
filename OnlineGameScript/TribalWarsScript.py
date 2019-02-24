@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-    File name: PlemionaScript.py
+    File name: TribalWarsScript.py
     Author: Leszek Błażewski
     Description: The main purpose of this script is to automate the boring
     process of sending troops to barbarian villages.
@@ -23,6 +23,7 @@ def SetWebDriverOptions(userSettings):
        Headles allows running the browser in background.
     """
     browserName = userSettings.get('InternetBrowser').lower()
+    options = None
     if browserName == 'firefox':
         options = Options()
         options.set_headless(headless=True)
@@ -180,7 +181,8 @@ def LocateTheVillageOnTheMap(browser, villageId):
             EC.element_to_be_clickable((By.ID, "map_village_" + villageId))
         )
     except TimeoutException:
-        print('Village with id %s could not be located.\n Please check whether the %s and location in barbarianVillageIdList.txt and barbarianVillageLocations.txt are correct.' % villageId)
+        print('Village with id %s could not be located.\n Please check whether the village id %s and location in barbarianVillageIdList.txt and barbarianVillageLocations.txt are correct.' % (villageId, villageId))
+        return
 
     villagePosition.click()
     attackButton = browser.find_element_by_id('mp_att')

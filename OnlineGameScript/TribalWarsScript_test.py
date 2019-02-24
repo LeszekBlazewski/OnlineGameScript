@@ -1,10 +1,10 @@
-"""File name: PlemionaScript_test.py
+"""File name: TribalWarsScript_test.py
    Author: Leszek Błażewski
    Description: Script used to test all possible outputs
    of the PlemionaScript.py
 """
 
-import PlemionaScript as ps
+import TribalWarsScript as ps
 import unittest
 
 
@@ -13,12 +13,14 @@ class TestBrowser(unittest.TestCase):
 
     def setUp(self):
         self._userSettings = {'InternetBrowser': 'Firefox',
-                              'Username': 'ValidUserName', 'Password': 'ValidPassword'}
-        self._options = ps.SetWebDriverOptions()
+                              'Username': 'ValidUsername',
+                              'Password': 'ValidPassword',
+                              'LinkToGameWebsite': 'https://www.plemiona.pl/'}
+        self._options = ps.SetWebDriverOptions(self._userSettings)
         self._browser = ps.ChooseBrowser(self._userSettings, self._options)
 
     def test_SettingWebDriverOptionsToheadless(self):
-        options = ps.SetWebDriverOptions()
+        options = ps.SetWebDriverOptions(self._userSettings)
         assert options.arguments[0] == '-headless'
 
     def test_ChooseFirefoxBrowser(self):
