@@ -1,4 +1,4 @@
-# OnlineGameScript ![CI status](https://img.shields.io/badge/build-passing-brightgreen.svg)
+# OnlineGameScript
 
 TribalWarsScript is a python script which automates the boring process of sending troops to barbarian villages ( A.K.A. farming) in online flash game:
 https://www.tribalwars.works/
@@ -17,7 +17,7 @@ You can find detailed instalation guide right here: [Instalation guide](https://
 * Selenium module installed
 * Driver configured for your chosen browser
 
-After installing python on your machine.  Simply open terminal on linux or cmd on Windows and enter run this command
+After installing python on your machine.  Simply open terminal on linux or cmd on Windows and run this command
 
 `$ pip install selenium`
 
